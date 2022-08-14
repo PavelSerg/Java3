@@ -63,15 +63,6 @@ public class ferzi {
         String completedString = builder.toString();
         return completedString;
     }
-}
-class MyThread extends Thread  {
-    private volatile ferzi clock;
-    private volatile int position;
-    public MyThread(ferzi clock1,int pos) {
-        position=pos;
-        clock=clock1;
-    }
-    @Override
     public void run(){
         try {
             if (position == clock.SIZE) {
