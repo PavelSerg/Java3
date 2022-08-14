@@ -10,7 +10,6 @@ public class ferzi {
     public ferzi(int N){
         SIZE=N;
         board=new int [N][N];
-        //zan=new boolean [N][N];
         results_count=0;
     }
     public boolean tryQueen(int a, int b){
