@@ -1,87 +1,114 @@
 // На шахматной доске расставить 8 ферзей так, чтобы они не били друг друга.
 
-public class ferzi {
-    protected int SIZE ;
-    protected int board[][];
-    protected int results_count = 0;
-    private int threadsCount;
-    public ferzi(){
+public class solution {
+
+  public static void printMatrix(char[][] board) {
+    int n = board.length;
+    System.out.println("------------------------------");
+    for (int i = 0; i < n; i++) {
+      for (int j = 0; j < n; j++) {
+        System.out.print(board[i][j] + "|");
+      }
+      System.out.println();
     }
-    public ferzi(int N){
-        SIZE=N;
-        board=new int [N][N];
-        results_count=0;
+    System.out.println("------------------------------");
+
+  }
+
+  public static void updateBoard(int row, int col, boolean[][] logicalBoard) {
+    int n = logicalBoard.length;
+
+    for (int j = 0; j < n; j++) {
+      logicalBoard[row][j] = false;
     }
-    public boolean tryQueen(int a, int b){
-        for (int i = 0; i < a; ++i)
-            if (board[i][b]==1)
-                return false;
-        for (int i = 1; i <= a && b - i >= 0; ++i)
-            if (board[a - i][b - i]==1)
-                return false;
- 
-        for (int i = 1; i <= a && b + i < SIZE; i++)
-            if (board[a - i][b + i]==1)
-                return false;
- 
-        return true;
+
+    for (int j = 0; j < n; j++) {
+      logicalBoard[j][col] = false;
     }
-    public void setQueen(int a) throws InterruptedException {
-        for(int i = 0; i < SIZE; ++i){
-            if (tryQueen(a, i)) {
-                board[a][i] = 1;
-                Thread thr = new MyThread(this,a+1);
-                thr.start();
-                thr.join();
-                board[a][i] = 0;
-            }
-        }
-        return;
+
+    int r = row;
+    int c = col;
+    while (r >= 0 && c >= 0) {
+      logicalBoard[r][c] = false;
+      r--;
+      c--;
     }
-    public  void showBoard(){
-        for (int a = 0; a < SIZE; ++a)
-        {
-            for (int b = 0; b < SIZE; ++b)
-            {
-                System.out.print((board[a][b]==1) ? "Q " : ". ");
-            }
-            System.out.print('\n');
-        }
-        System.out.print('\n');
+
+    r = row;
+    c = col;
+    while (r < 8 && c < 8) {
+      logicalBoard[r][c] = false;
+      r++;
+      c++;
     }
-    public String toString(){
-        StringBuilder builder = new StringBuilder();
-        for (int a = 0; a < SIZE; ++a) {
-            for (int b = 0; b < SIZE; ++b) {
-                if(board[a][b]==1)
-                    builder.append( "Q ");
-                else
-                    builder.append( ". ");
-            }
-        }
-        String completedString = builder.toString();
-        return completedString;
+
+    r = row;
+    c = col;
+    while (r < 8 && c >= 0) {
+      logicalBoard[r][c] = false;
+      r++;
+      c--;
     }
-    public void run(){
-        try {
-            if (position == clock.SIZE) {
-                ++clock.results_count;
-                System.out.print("Result #" + clock.results_count + '\n');
-                clock.showBoard();
-                return;
-            }
-            for (int i = 0; i < clock.SIZE; ++i) {
-                if (clock.tryQueen(position, i)) {
-                    clock.board[position][i] = 1;
-                    Thread thr = new MyThread(clock, position + 1);
-                    thr.start();
-                    thr.join();
-                    clock.board[position][i] = 0;
-                }
-            }
-        }
-        catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+    r = row;
+    c = col;
+    while (r >= 0 && c < 8) {
+      logicalBoard[r][c] = false;
+      r--;
+      c++;
     }
+  }
+
+  public static char[][] copyArray(char[][] original) {
+    char[][] copy = new char[original.length][];
+    for (int i = 0; i < original.length; i++) {
+      copy[i] = original[i].clone();
+    }
+    return copy;
+  }
+
+  public static boolean[][] copyArray(boolean[][] original) {
+    boolean[][] copy = new boolean[original.length][];
+    for (int i = 0; i < original.length; i++) {
+      copy[i] = original[i].clone();
+    }
+    return copy;
+  }
+
+  public static void arrangeQueens(char[][] board, boolean[][] logicalBoard, int rowNumber) {
+    if (rowNumber == 8) {
+      printMatrix(board);
+      return;
+    }
+
+    int n = board.length;
+    for (int column = 0; column < n; column++) {
+      if (logicalBoard[rowNumber][column]) {
+        char[][] newBoard = copyArray(board);
+        boolean[][] newLogicalBoard = copyArray(logicalBoard);
+        newBoard[rowNumber][column] = 'Q';
+        newLogicalBoard[rowNumber][column] = false;
+        updateBoard(rowNumber, column, newLogicalBoard);
+        arrangeQueens(newBoard, newLogicalBoard, rowNumber + 1);
+      }
+    }
+  }
+
+  public static void arrangeQueens() {
+    int N = 8;
+    char[][] board = new char[8][8];
+    boolean[][] logicalBoard = new boolean[8][8];
+    for (int i = 0; i < N; i++) {
+      for (int j = 0; j < N; j++) {
+        board[i][j] = ' ';
+        logicalBoard[i][j] = true;
+      }
+    }
+    arrangeQueens(board, logicalBoard, 0);
+  }
+
+  public static void main(String[] args){
+    arrangeQueens();
+  }
+
 }
